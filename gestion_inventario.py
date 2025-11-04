@@ -169,17 +169,27 @@ class Inventario:
         """
         # TODO: devolver la suma total del valor del stock
 
-    def mostrar_por_proveedor(self, nombre_proveedor):
-        """
-        Muestra todos los productos de un proveedor determinado.
-        Si no existen productos de ese proveedor, mostrar un mensaje.
-        """
-        # TODO: filtrar y mostrar los productos de un proveedor concreto
-        pass
+    def mostrar_por_proveedor(self, nombre_proveedor): #POR CÓDIGO!!! 
+        productos = ""
+        encontrado = False
+        for p in self.productos:
+            if p.proveedor['codigo'] == nombre_proveedor:
+                productos += f"{p}\n"
+                encontrado = True
+        if encontrado:
+            return productos
+        else:
+            return "El proveedor no existe."
+        
+    """
+    Muestra todos los productos de un proveedor determinado.
+    Si no existen productos de ese proveedor, mostrar un mensaje.
+    """
+    # TODO: filtrar y mostrar los productos de un proveedor concreto
 
 
 # ======================================================
-# Función principal (menú de la aplicación)
+# Funcións principal (menú de la aplicación)
 # ======================================================
 
 def main():
@@ -228,7 +238,8 @@ def main():
             print(inventario.valor_total() + "€")
         
         elif opcion == '7':
-            pass
+            codigo = input("Código del proveedor a buscar: ")
+            print(inventario.mostrar_por_proveedor(codigo))
         
         elif opcion == '8':
             break
