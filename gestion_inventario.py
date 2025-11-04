@@ -1,7 +1,7 @@
 """
 Examen: Gestión de Inventario con Persistencia JSON y Programación Orientada a Objetos
-Autor/a: _______________________________________
-Fecha: __________________________________________
+Autor/a: Alba Vázquez Guillén_______________________________________
+Fecha: 4 de noviembre de 2025______________________________________
 
 Objetivo:
 Desarrollar una aplicación orientada a objetos que gestione un inventario de productos
@@ -23,13 +23,13 @@ import os
 # ======================================================
 
 class Proveedor:
-    def __init__(self, nombre, contacto):
-        # TODO: definir los atributos de la clase
-        pass
+    def __init__(self, codigo, nombre, contacto):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.contacto = contacto
 
     def __str__(self):
-        # TODO: devolver una cadena legible con el nombre y el contacto del proveedor
-        pass
+        return f"{self.codigo, self.nombre, self.contacto}"
 
 
 # ======================================================
@@ -38,13 +38,15 @@ class Proveedor:
 
 class Producto:
     def __init__(self, codigo, nombre, precio, stock, proveedor):
-        # TODO: definir los atributos de la clase
-        pass
+        self.codigo = codigo
+        self.nombre = nombre
+        self.precio = precio
+        self.stock = stock
+        self.proveedor = proveedor
 
     def __str__(self):
-        # TODO: devolver una representación legible del producto
+        return f"{self.codigo} {self.nombre} - {self.precio} € ({self.stock} uds.) | Proveedor: {self.proveedor} {self.proveedor['contacto']}"
         # Ejemplo: "[P001] Teclado - 45.99 € (10 uds.) | Proveedor: TechZone (ventas@techzone.com)"
-        pass
 
 
 # ======================================================
@@ -53,16 +55,36 @@ class Producto:
 
 class Inventario:
     def __init__(self, nombre_fichero):
-        # TODO: definir los atributos e inicializar la lista de productos
-        pass
+        self.nombre_fichero = nombre_fichero
+        self.productos = []
 
     def cargar(self):
+        lista_productos = self.productos = []
+        lista_proveedores = []
+        
+        try:
+            with open ('inventario.json', 'r') as f: 
+                datos = json.load(f)
+                
+            for d in datos:
+                producto = Producto(d['codigo'], d['nombre'], d['precio'], d['stock'], d['proveedor'])
+                lista_productos.append(producto)
+                
+                proveedor = Proveedor(d['proveedor']['codigo'], d['proveedor']['nombre'], d['proveedor']['contacto'])
+                
+                # for p in d['proveedor'].items():
+                #     proveedor = Proveedor(p)
+                    
+                if proveedor not in lista_proveedores:
+                    lista_proveedores.append(proveedor)
+                    
+        except FileExistsError:
+            lista_productos = []
         """
         Carga los datos del fichero JSON si existe y crea los objetos Producto y Proveedor.
         Si el fichero no existe, crea un inventario vacío.
         """
         # TODO: implementar la lectura del fichero JSON y la creación de objetos
-        pass
 
     def guardar(self):
         """
@@ -73,25 +95,34 @@ class Inventario:
         pass
 
     def anadir_producto(self, producto):
+        for p in self.productos:
+            if p.codigo == producto.codigo:
+                print("Ese producto ya está añadido.")
+                return
+        self.productos.append(producto)
+        print("Producto añadido.")
         """
         Añade un nuevo producto al inventario si el código no está repetido.
         """
         # TODO: comprobar si el código ya existe y, si no, añadirlo
-        pass
 
     def mostrar(self):
+        for p in self.productos:
+            print (f"{p}\n")
         """
         Muestra todos los productos del inventario.
         """
         # TODO: mostrar todos los productos almacenados
-        pass
 
     def buscar(self, codigo):
+        for p in self.productos:
+            if p.codigo == codigo:
+                return p
+        print("None")
         """
         Devuelve el producto con el código indicado, o None si no existe.
         """
         # TODO: buscar un producto por código
-        pass
 
     def modificar(self, codigo, nombre=None, precio=None, stock=None):
         """
@@ -101,13 +132,24 @@ class Inventario:
         pass
 
     def eliminar(self, codigo):
+        for p in self.productos:
+            if p.codigo == codigo:
+                self.productos.remove(p)
+                print("Producto borrado.")
+                return
+        print("No hay un producto con ese código.")
+        
         """
         Elimina un producto del inventario según su código.
         """
         # TODO: eliminar el producto de la lista
-        pass
+
 
     def valor_total(self):
+        valor = 0
+        for p in self.productos:
+            valor += (p.precio * p.stock)
+        return valor
         """
         Calcula y devuelve el valor total del inventario (precio * stock).
         """
@@ -129,6 +171,13 @@ class Inventario:
 
 def main():
     # TODO: crear el objeto Inventario y llamar a los métodos según la opción elegida
+    inventario = Inventario('inventario.json')
+    proveedor1 = Proveedor('PR05', 'Alguno', 'alguno@dominiochuli.com')
+    producto1 = Producto("P006", "Ratón inalámbrico", 13.5, 10, proveedor1)
+    
+    inventario.cargar()
+    
+
     while True:
         print("\n=== GESTIÓN DE INVENTARIO ===")
         print("1. Añadir producto")
@@ -143,7 +192,32 @@ def main():
         opcion = input("Seleccione una opción: ")
 
         # TODO: implementar las acciones correspondientes a cada opción del menú
-
+        if opcion == '1':
+            producto = input("Producto a añadir: ")
+            inventario.anadir_producto(producto)
+        
+        elif opcion == '2':
+            inventario.mostrar()
+        
+        elif opcion == '3':
+            codigo = input("Código del producto a buscar: ")
+            print(inventario.buscar(codigo))
+        
+        elif opcion == '4':
+            pass
+        
+        elif opcion == '5':
+            codigo = input("Código del producto a eliminar: ")
+            inventario.eliminar(codigo)
+        
+        elif opcion == '6':
+            print(inventario.valor_total())
+        
+        elif opcion == '7':
+            pass
+        
+        elif opcion == '8':
+            break
 
 if __name__ == "__main__":
     main()
